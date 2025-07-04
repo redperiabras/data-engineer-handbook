@@ -17,7 +17,7 @@ INSERT INTO actors
                 c.rating,
                 c.filmid
             )::films) AS films,
-            AVG(c.rating) AS avg_rating,
+            AVG(c.rating) AS avg_rating, 
             c.year
         FROM current c
         GROUP BY c.actorid, c.actor, c.year
