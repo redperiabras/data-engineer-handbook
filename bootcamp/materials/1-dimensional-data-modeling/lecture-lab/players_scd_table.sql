@@ -1,3 +1,5 @@
+DROP table players_scd;
+
 create table players_scd
 (
 	player_name text,
@@ -20,7 +22,7 @@ INSERT INTO players_scd
             LAG(scoring_class, 1) OVER (PARTITION BY player_name ORDER BY current_season) AS previous_scoring_class,
             LAG(is_active, 1) OVER (PARTITION BY player_name ORDER BY current_season) AS previous_is_active
         FROM players
-        WHERE current_season <= 2021
+        WHERE current_season <= 2022
     ), with_indicators AS (
         SELECT *,
             CASE

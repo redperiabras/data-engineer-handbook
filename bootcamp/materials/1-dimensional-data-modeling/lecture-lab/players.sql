@@ -5,35 +5,39 @@ CREATE TYPE season_stats AS (
     reb REAL,
     weight INTEGER
 );
+
 CREATE TYPE scoring_class AS
     ENUM ('bad', 'average', 'good', 'star');
 
 
- CREATE TABLE players (
-     player_name TEXT,
-     height TEXT,
-     college TEXT,
-     country TEXT,
-     draft_year TEXT,
-     draft_round TEXT,
-     draft_number TEXT,
-     seasons season_stats[],
-     scoring_class scoring_class,
-     years_since_last_active INTEGER,
-     is_active BOOLEAN,
-     current_season INTEGER,
-     PRIMARY KEY (player_name, current_season)
- );
+DROP TABLE players;
 
-DROP TABLE players
+CREATE TABLE players (
+    player_name TEXT,
+    height TEXT,
+    college TEXT,
+    country TEXT,
+    draft_year TEXT,
+    draft_round TEXT,
+    draft_number TEXT,
+    seasons season_stats[],
+    scoring_class scoring_class,
+    -- years_since_last_active INTEGER,
+    is_active BOOLEAN,
+    current_season INTEGER,
+    PRIMARY KEY (player_name, current_season)
+);
+
+
+SELECT * FROM player_seasons;
 
 INSERT INTO players
     WITH yesterday AS (
         SELECT * FROM players
-        WHERE current_season = 2020
+        WHERE current_season = 1995
     ), today AS (
         SELECT * FROM player_seasons
-        WHERE season = 2021
+        WHERE season = 1996
     )
     SELECT
         COALESCE(t.player_name, y.player_name) AS player_name,
@@ -44,7 +48,7 @@ INSERT INTO players
         COALESCE(t.draft_round, y.draft_round) AS draft_round,
         COALESCE(t.draft_number, y.draft_number) AS draft_number,
         CASE
-            WHEN y.season_stats IS NULL
+            WHEN y.seasons IS NULL
                 THEN ARRAY[ROW(
                     t.season,
                     t.gp,
@@ -53,14 +57,14 @@ INSERT INTO players
                     t.ast
                 )::season_stats]
             WHEN t.season IS NOT NULL
-                THEN y.season_stats || ARRAY[ROW(
+                THEN y.seasons || ARRAY[ROW(
                     t.season,
                     t.gp,
                     t.pts,
                     t.reb,
                     t.ast
                 )::season_stats]
-            ELSE y.season_stats
+            ELSE y.seasons
         END AS season_stats,
         CASE
             WHEN t.season IS NOT NULL
@@ -84,8 +88,8 @@ INSERT INTO players
 SELECT * FROM players
 SELECT
     player_name,
-    (season_stats[cardinality(season_stats)]::season_stats).pts /
-    CASE WHEN (season_stats[1]::season_stats).pts = 0 THEN 1 ELSE (season_stats[1]::season_stats).pts END
+    (seasons[cardinality(seasons)]::season_stats).pts /
+    CASE WHEN (seasons[1]::season_stats).pts = 0 THEN 1 ELSE (seasons[1]::season_stats).pts END
 FROM players
 WHERE current_season = 2001
 AND scoring_class = 'star'
