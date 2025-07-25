@@ -61,7 +61,7 @@ def create_processed_events_source_kafka(t_env):
             window_timestamp AS TO_TIMESTAMP(event_time, '{pattern}'),
             WATERMARK FOR window_timestamp AS window_timestamp - INTERVAL '15' SECOND
         ) WITH (
-             'connector' = 'kafka',
+            'connector' = 'kafka',
             'properties.bootstrap.servers' = '{os.environ.get('KAFKA_URL')}',
             'topic' = '{os.environ.get('KAFKA_TOPIC')}',
             'properties.group.id' = '{os.environ.get('KAFKA_GROUP')}',

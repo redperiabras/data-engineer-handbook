@@ -135,3 +135,5 @@ dump.sql
 # Personal workspace files
 .idea/*
 .vscode/*
+
+.env
