@@ -93,6 +93,7 @@ def log_aggregation():
 
         aggregated_table = create_aggregated_events_sink_postgres(t_env)
         aggregated_sink_table = create_aggregated_events_referrer_sink_postgres(t_env)
+        
         t_env.from_path(source_table)\
             .window(
             Tumble.over(lit(5).minutes).on(col("window_timestamp")).alias("w")
